@@ -1,0 +1,153 @@
+//{ Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// } Driver Code Ends
+// User function Template for C++
+
+class Solution{
+    private:
+        vector <int> toposort(int V,vector <int> adj[])
+        {
+            vector <int> ans;
+            vector <int> indegree( V,0);
+            queue <int> q1;
+            for (int i = 0; i < V; ++i)
+            {
+                for(auto x: adj[i])
+                {
+                    indegree[x]++;
+                }
+                
+            }
+            //check indegree
+            // for(auto x:indegree)
+            // {
+            //     cout<<x<<endl;
+            // }
+            for (int i = 0; i < V; ++i)
+            {
+                 if(indegree[i]==0)
+                {
+                    q1.push(i);
+                }
+                
+            }
+           
+            while(!q1.empty())
+            {
+                int temp= q1.front();q1.pop();
+                ans.push_back(temp);
+                for(auto x: adj[temp])
+                {
+                    indegree[x]--;
+                    if(indegree[x]==0)
+                    {
+                        q1.push(x);
+                    }
+                }
+            }
+            return ans;
+        }
+    public:
+    string findOrder(string str[], int N, int k) {
+        //initilize a graph so that we can apply topo sort 
+        vector <int > adj[k];
+        // for (int i = 0; i < k; ++i)
+        // {
+        //     adj[i].push_back(i);
+        // }
+        //our approach will be to convert the given string into a graph such that 
+        //we will represent a,b,c,d with 0,1,2,3
+        for (int i = 0; i < N-1; ++i)
+        {
+
+            string str1=str[i];
+            string str2=str[i+1];
+            int len=min(str1.size(),str2.size());
+            for(int j=0;j< len;j++ )
+            {
+                
+                if(str1[j] != str2[j])
+                {
+                    // cout<<"hello"<<endl;
+                    adj[str1[j] - 'a'].push_back(str2[j] - 'a');
+                     // cout<<"hello"<<endl;
+                    break;
+                }
+            }
+        }
+        //chceking that the graph is formed properly 
+        // for (int i = 0; i < k; ++i)
+        // {
+        //     for(auto x:adj[i])
+        //     {
+        //         cout<<x<<" ";
+        //     }
+        //     cout<<endl;
+        // }
+        //now we need to apply topo sort to get the desired sequence of doing work
+        vector <int > ans = toposort(k,adj);  
+         // for(auto x:ans)
+         //    {
+         //        cout<<x;
+         //    }
+        //converting numeric vcetor back to string
+            string strans="";
+            for(auto x: ans)
+            {
+                strans = strans + char(x+'a');
+            }
+        return strans;
+    }
+};
+
+//{ Driver Code Starts.
+string order;
+bool f(string a, string b) {
+    int p1 = 0;
+    int p2 = 0;
+    for (int i = 0; i < min(a.size(), b.size()) and p1 == p2; i++) {
+        p1 = order.find(a[i]);
+        p2 = order.find(b[i]);
+        //	cout<<p1<<" "<<p2<<endl;
+    }
+
+    if (p1 == p2 and a.size() != b.size()) return a.size() < b.size();
+
+    return p1 < p2;
+}
+
+// Driver program to test above functions
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int N, K;
+        cin >> N >> K;
+        string dict[N];
+        for (int i = 0; i < N; i++) cin >> dict[i];
+        
+        Solution obj;
+        string ans = obj.findOrder(dict, N, K);
+        order = "";
+        for (int i = 0; i < ans.size(); i++) order += ans[i];
+
+        string temp[N];
+        std::copy(dict, dict + N, temp);
+        sort(temp, temp + N, f);
+
+        bool f = true;
+        for (int i = 0; i < N; i++)
+            if (dict[i] != temp[i]) f = false;
+
+        if(f)cout << 1;
+        else cout << 0;
+        cout << endl;
+    }
+    return 0;
+}
+
+// } Driver Code Ends
